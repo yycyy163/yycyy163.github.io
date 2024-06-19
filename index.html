@@ -26,9 +26,9 @@
     <div id="markdown-content"></div>
     
     <script>
-        const repo = '你的GitHub用户名/你的仓库名'; // 修改为你的GitHub用户名和仓库名
+        const repo = 'yycyy163/yycyy163.github.io'; // 修改为你的GitHub用户名和仓库名
         const branch = 'main'; // 修改为你的分支名
-        const docsPath = 'docs'; // 修改为Markdown文件所在的目录
+        const docsPath = ''; // Markdown文件所在的根目录
 
         async function fetchFiles() {
             const url = `https://api.github.com/repos/${repo}/contents/${docsPath}?ref=${branch}`;
@@ -49,6 +49,27 @@
             const container = document.getElementById('file-links');
             files.forEach(file => {
                 const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'file-link';
+                link.textContent = file.name;
+                link.onclick = (event) => {
+                    event.preventDefault();
+                    loadFileContent(file.path);
+                };
+                container.appendChild(link);
+            });
+        }
+
+        async function init() {
+            const files = await fetchFiles();
+            createFileLinks(files);
+        }
+
+        init();
+    </script>
+</body>
+</html>
+ink = document.createElement('a');
                 link.href = '#';
                 link.className = 'file-link';
                 link.textContent = file.name;
