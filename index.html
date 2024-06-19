@@ -1,12 +1,71 @@
 <!DOCTYPE html>
-<html lang ="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA_Comptible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>个人资料库</title>
-    </head>
-    <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人网站</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.10/marked.min.js"></script>
+    <style>
+        #markdown-content {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .file-link {
+            margin: 10px 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>个人网站</h1>
+    <div id="file-links">
+        <!-- Links to Markdown files will be added here dynamically -->
+    </div>
+    <div id="markdown-content"></div>
+    
+    <script>
+        const repo = '你的GitHub用户名/你的仓库名'; // 修改为你的GitHub用户名和仓库名
+        const branch = 'main'; // 修改为你的分支名
+        const docsPath = 'docs'; // 修改为Markdown文件所在的目录
 
-    </body>
+        async function fetchFiles() {
+            const url = `https://api.github.com/repos/${repo}/contents/${docsPath}?ref=${branch}`;
+            const response = await fetch(url);
+            const files = await response.json();
+            return files.filter(file => file.name.endsWith('.md'));
+        }
+
+        async function loadFileContent(filePath) {
+            const url = `https://raw.githubusercontent.com/${repo}/${branch}/${filePath}`;
+            const response = await fetch(url);
+            const markdownText = await response.text();
+            const htmlContent = marked(markdownText);
+            document.getElementById('markdown-content').innerHTML = htmlContent;
+        }
+
+        function createFileLinks(files) {
+            const container = document.getElementById('file-links');
+            files.forEach(file => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'file-link';
+                link.textContent = file.name;
+                link.onclick = (event) => {
+                    event.preventDefault();
+                    loadFileContent(`${docsPath}/${file.name}`);
+                };
+                container.appendChild(link);
+            });
+        }
+
+        async function init() {
+            const files = await fetchFiles();
+            createFileLinks(files);
+        }
+
+        init();
+    </script>
+</body>
 </html>
